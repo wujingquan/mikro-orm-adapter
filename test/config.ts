@@ -14,3 +14,8 @@ export const connectionConfig: Options = {
       : 'password',
   dbName: process.env.MYSQL_DB || 'casbin'
 }
+
+export const mongoConnectionConfig: Options = {
+  type: 'mongo',
+  clientUrl: process.env.MONGODB_CLIENT_URL
+}

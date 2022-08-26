@@ -309,7 +309,7 @@ export default class MikroORMAdapter implements FilteredAdapter {
       return adapterConfig.customCasbinRuleEntity;
     }
 
-    if (type === 'mongodb') {
+    if (type === 'mongo') {
       return CasbinMongoRule;
     }
     return CasbinRule;
