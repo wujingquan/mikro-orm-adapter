@@ -14,7 +14,7 @@
 
 import { Entity, BaseEntity, Property, PrimaryKey } from '@mikro-orm/core';
 @Entity()
-export class CasbinRule extends BaseEntity<CasbinRule, 'id'> {
+export class CasbinRule extends BaseEntity {
   @PrimaryKey()
   public id: number;
 

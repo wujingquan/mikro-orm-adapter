@@ -13,10 +13,9 @@
 // limitations under the License.
 
 import { Helper, Model, FilteredAdapter } from 'casbin';
-import { MikroORM, Options, EntityRepository } from '@mikro-orm/core';
+import { EntityRepository, MikroORM, Options } from '@mikro-orm/core';
 import { CasbinRule } from './casbinRule';
 import { CasbinMongoRule } from './casbinMongoRule';
-
 type GenericCasbinRule = CasbinRule | CasbinMongoRule;
 type CasbinRuleConstructor = new (...args: any[]) => GenericCasbinRule;
 
@@ -77,7 +76,7 @@ export default class MikroORMAdapter implements FilteredAdapter {
       const options = option as Options;
       const entities = {
         entities: [
-          this.getCasbinRuleType(options.type as string, adapterConfig)
+          this.getCasbinRuleType(options.driver?.name, adapterConfig)
         ]
       };
       const configuration = Object.assign(defaults, options);
@@ -93,7 +92,7 @@ export default class MikroORMAdapter implements FilteredAdapter {
   private async open() {
     if (!this.orm) {
       this.orm = await MikroORM.init({
-        ...this.option
+        ...this.option,
       });
     }
 
@@ -204,7 +203,7 @@ export default class MikroORMAdapter implements FilteredAdapter {
       }
     }
 
-    await this.getRepository().persistAndFlush(lines);
+    await this.orm.em.fork().persistAndFlush(lines);
     return true;
   }
 
@@ -213,7 +212,7 @@ export default class MikroORMAdapter implements FilteredAdapter {
    */
   public async addPolicy(sec: string, ptype: string, rule: string[]) {
     const line = this.savePolicyLine(ptype, rule);
-    await this.getRepository().persistAndFlush(line);
+    await this.orm.em.fork().persistAndFlush(line);
   }
 
   /**
@@ -226,7 +225,7 @@ export default class MikroORMAdapter implements FilteredAdapter {
       lines.push(line);
     }
 
-    await this.getRepository().persistAndFlush(lines);
+    await this.orm.em.fork().persistAndFlush(lines);
   }
 
   /**
@@ -291,8 +290,8 @@ export default class MikroORMAdapter implements FilteredAdapter {
 
   private getCasbinRuleConstructor(): CasbinRuleConstructor {
     return MikroORMAdapter.getCasbinRuleType(
-      this.option.type as string,
-      this.adapterConfig,
+      this.option.driver?.name,
+      this.adapterConfig
     );
   }
 
@@ -302,14 +301,14 @@ export default class MikroORMAdapter implements FilteredAdapter {
    * @param type
    */
   private static getCasbinRuleType(
-    type: string,
+    type: string | undefined,
     adapterConfig?: MikroORMAdapterConfig,
   ): CasbinRuleConstructor {
     if (adapterConfig?.customCasbinRuleEntity) {
       return adapterConfig.customCasbinRuleEntity;
     }
 
-    if (type === 'mongo') {
+    if (type === 'MongoDriver') {
       return CasbinMongoRule;
     }
     return CasbinRule;

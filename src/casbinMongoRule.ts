@@ -16,7 +16,7 @@ import { BaseEntity, Property, Entity, PrimaryKey, SerializedPrimaryKey } from '
 import { ObjectId } from '@mikro-orm/mongodb';
 
 @Entity()
-export class CasbinMongoRule extends BaseEntity<CasbinMongoRule, 'id'> {
+export class CasbinMongoRule extends BaseEntity {
   @PrimaryKey()
   public _id: ObjectId;
 

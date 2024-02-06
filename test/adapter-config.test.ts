@@ -16,6 +16,7 @@ import { MikroORM, Entity, Property } from '@mikro-orm/core';
 import { Enforcer } from 'casbin';
 import MikroORMAdapter, { CasbinRule } from '../src/index';
 import { connectionConfig } from './config';
+import defaultFileSystem from './defaultFileSystem';
 
 @Entity()
 class CustomCasbinRule extends CasbinRule {
@@ -51,6 +52,7 @@ test(
       // Because the DB is empty at first,
       // so we need to load the policy from the file adapter (.CSV) first.
       const e = new Enforcer();
+      e.setFileSystem(defaultFileSystem);
 
       await e.initWithFile(
         'examples/rbac_model.conf',

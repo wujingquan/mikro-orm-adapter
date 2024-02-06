@@ -16,6 +16,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { Enforcer, Util } from 'casbin';
 import TypeORMAdapter, { CasbinRule } from '../src/index';
 import { connectionConfig } from './config';
+import defaultFileSystem from './defaultFileSystem';
 
 async function testGetPolicy(e: Enforcer, res: string[][]) {
   const myRes = await e.getPolicy();
@@ -42,6 +43,7 @@ test(
       // Because the DB is empty at first,
       // so we need to load the policy from the file adapter (.CSV) first.
       let e = new Enforcer();
+      e.setFileSystem(defaultFileSystem);
 
       await e.initWithFile(
         'examples/rbac_model.conf',
@@ -73,6 +75,7 @@ test(
       // Create an adapter and an enforcer.
       // newEnforcer() will load the policy automatically.
       e = new Enforcer();
+      e.setFileSystem(defaultFileSystem);
       await e.initWithAdapter('examples/rbac_model.conf', a);
       await testGetPolicy(e, [
         ['alice', 'data1', 'read'],
@@ -88,6 +91,7 @@ test(
       // Add policy to DB
       await a.addPolicy('', 'p', ['role', 'res', 'action']);
       e = new Enforcer();
+      e.setFileSystem(defaultFileSystem);
       await e.initWithAdapter('examples/rbac_model.conf', a);
       await testGetPolicy(e, [
         ['alice', 'data1', 'read'],
@@ -105,6 +109,7 @@ test(
         ['role5', 'res5', 'action5'],
       ]);
       e = new Enforcer();
+      e.setFileSystem(defaultFileSystem);
       await e.initWithAdapter('examples/rbac_model.conf', a);
       await testGetPolicy(e, [
         ['alice', 'data1', 'read'],
@@ -122,6 +127,7 @@ test(
       // Remove policy from DB
       await a.removePolicy('', 'p', ['role', 'res', 'action']);
       e = new Enforcer();
+      e.setFileSystem(defaultFileSystem);
       await e.initWithAdapter('examples/rbac_model.conf', a);
       await testGetPolicy(e, [
         ['alice', 'data1', 'read'],
@@ -143,6 +149,7 @@ test(
         ['role5', 'res5', 'action5'],
       ]);
       e = new Enforcer();
+      e.setFileSystem(defaultFileSystem);
       await e.initWithAdapter('examples/rbac_model.conf', a);
       await testGetPolicy(e, [
         ['alice', 'data1', 'read'],
