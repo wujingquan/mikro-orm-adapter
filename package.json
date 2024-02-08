@@ -1,6 +1,6 @@
 {
   "name": "mikro-orm-adapter",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "description": "MikroORM adapter for Casbin",
   "main": "lib/index.js",
   "typings": "lib/index.d.ts",
